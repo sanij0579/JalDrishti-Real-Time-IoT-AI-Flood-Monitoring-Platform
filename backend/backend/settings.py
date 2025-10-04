@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'theme',
     'corsheaders',
     'locations',
-    'sliders'
+    'sliders',
+    'api',
     
 ]
 

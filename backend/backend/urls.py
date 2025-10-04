@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -22,5 +22,6 @@ def combined_view(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),          # default admin
-    path('combined-admin/', combined_view),   # custom combined page
+    path('combined-admin/', combined_view), 
+    path('api/', include('api.urls')),# custom combined page
 ]
