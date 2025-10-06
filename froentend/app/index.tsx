@@ -19,6 +19,8 @@ export default function MobileInputPage() {
       className="flex-1 px-6"
       style={{ backgroundColor: colors.background }}
     >
+      
+      
       {/* Skip button top right */}
       <View className="flex-row justify-end mt-4">
         <TouchableOpacity

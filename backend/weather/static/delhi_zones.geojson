@@ -1,0 +1,8 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "properties": { "name": "Karol Bagh" }, "geometry": { "type": "Point", "coordinates": [77.2000, 28.6510] } },
+    { "type": "Feature", "properties": { "name": "Lajpat Nagar" }, "geometry": { "type": "Point", "coordinates": [77.2500, 28.5670] } },
+    { "type": "Feature", "properties": { "name": "Dwarka" }, "geometry": { "type": "Point", "coordinates": [77.0500, 28.5910] } }
+  ]
+}

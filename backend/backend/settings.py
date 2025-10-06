@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'locations',
     'sliders',
     'api',
+    'flood',
+    'weather',
+    'reviews',
     
 ]
 

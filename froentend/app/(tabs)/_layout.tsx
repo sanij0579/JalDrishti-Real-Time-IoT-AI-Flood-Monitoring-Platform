@@ -1,61 +1,116 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
-import { lightColors, darkColors,} from "../../constants/colors"; // ✅ adjust path
+import { Platform } from "react-native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// Create a React Query client
+const queryClient = new QueryClient();
 
 export default function TabLayout() {
-  // 👉 abhi ke liye manually ek theme pick kar rahe hain
-  const colors = lightColors; // change to darkColors, diwaliColors, etc.
-
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.placeholder,
-        tabBarStyle: {
-          backgroundColor: colors.background,
-          height: 60,
-          borderTopWidth: 0.5,
-          borderTopColor: colors.border,
-        },
-        tabBarLabelStyle: { fontSize: 12, marginBottom: 5, fontWeight: "bold" },
-        headerShown: true,
-        headerStyle: { backgroundColor: colors.background },
-        headerTitleStyle: { color: colors.text },
-      } satisfies BottomTabNavigationOptions}
-    >
-      {/* Home */}
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
+    <QueryClientProvider client={queryClient}>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: "#00f6ff", // neon blue for modern look
+          tabBarInactiveTintColor: "#a5b4fc", // soft violet
+          tabBarStyle: {
+            backgroundColor: "#1e3a8a", // deep tech-blue
+            height: Platform.OS === "ios" ? 80 : 65,
+            borderTopWidth: 0,
+            paddingBottom: Platform.OS === "ios" ? 20 : 10,
+            shadowColor: "#000",
+            shadowOpacity: 0.15,
+            shadowRadius: 8,
+            elevation: 6,
+          },
+          tabBarLabelStyle: { fontSize: 13, fontWeight: "bold" },
+          tabBarActiveBackgroundColor: "#2563eb",
+          headerStyle: {
+            backgroundColor: "#1e40af", // modern header color
+          },
+          headerTitleStyle: {
+            color: "#00f6ff", // neon/modern color
+            fontWeight: "bold",
+            fontSize: 18,
+            marginTop: 10,
+          },
         }}
-      />
+      >
+        {/* 🏠 Home */}
+        <Tabs.Screen
+          name="home"
+          options={{
+            headerTitle: "🌊 Flood Dashboard",
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "home" : "home-outline"}
+                size={size + (focused ? 2 : 0)}
+                color={color}
+              />
+            ),
+          }}
+        />
 
-      {/* Cart */}
-      <Tabs.Screen
-        name="cart"
-        options={{
-          title: "Cart",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cart-outline" size={size} color={color} />
-          ),
-        }}
-      />
+        {/* ➕ Add Post / Upstream-Downstream */}
+        <Tabs.Screen
+          name="Area"
+          options={{
+            headerTitle: "Up/Downstream Area",
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "water" : "water-outline"}
+                size={size + (focused ? 2 : 0)}
+                color={focused ? "#00f6ff" : color}
+              />
+            ),
+          }}
+        />
 
-      {/* Profile */}
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-circle-outline" size={size} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+        {/* 📊 Data */}
+        <Tabs.Screen
+          name="data"
+          options={{
+            headerTitle: "Data Overview",
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "analytics" : "analytics-outline"}
+                size={size + (focused ? 2 : 0)}
+                color={focused ? "#00f6ff" : color}
+              />
+            ),
+          }}
+        />
+
+        {/* 🚦 Traffic */}
+        <Tabs.Screen
+          name="traffic"
+          options={{
+            headerTitle: "Traffic Info",
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "camera" : "camera-outline"}
+                size={size + (focused ? 2 : 0)}
+                color={focused ? "#00f6ff" : color}
+              />
+            ),
+          }}
+        />
+
+        {/* 👤 Profile */}
+        <Tabs.Screen
+          name="profile"
+          options={{
+            headerTitle: "Profile",
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "person" : "person-circle-outline"}
+                size={size + (focused ? 2 : 0)}
+                color={focused ? "#00f6ff" : color}
+              />
+            ),
+          }}
+        />
+      </Tabs>
+    </QueryClientProvider>
   );
 }
