@@ -69,7 +69,7 @@ export default function MobileInputPage() {
     overflow: "hidden",
   }}
 >
-  CyberCup 2025
+  🌊 जलDrishti 🌊
 </Text>
 
         {/* Tagline */}

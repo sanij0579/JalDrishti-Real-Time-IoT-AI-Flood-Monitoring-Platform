@@ -1,11 +1,21 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, StyleSheet, ActivityIndicator, Text, TouchableOpacity, Dimensions, Switch } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  Switch,
+  ScrollView,
+} from "react-native";
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LineChart } from "react-native-chart-kit";
 
-const BASE_URL = "http://10.55.240.81:8000/api";
+const BASE_URL = "http://10.107.0.142:8000/api";
 const { width, height } = Dimensions.get("window");
 
 type VulnerabilityPoint = {
@@ -22,13 +32,37 @@ type RainfallData = {
   rainfall_mm: number;
 };
 
+type HistoricalRainfall = {
+  year: number;
+  jan: number;
+  feb: number;
+  mar: number;
+  apr: number;
+  may: number;
+  june: number;
+  july: number;
+  aug: number;
+  sept: number;
+  oct: number;
+  nov: number;
+  dec: number;
+  total: number;
+};
+
 const getHybridColor = (risk: string, rainfall: number) => {
   let baseColor: [number, number, number];
   switch (risk) {
-    case "high": baseColor = [255, 0, 0]; break;
-    case "medium": baseColor = [255, 165, 0]; break;
-    case "low": baseColor = [0, 200, 0]; break;
-    default: baseColor = [0, 0, 255];
+    case "high":
+      baseColor = [255, 0, 0];
+      break;
+    case "medium":
+      baseColor = [255, 165, 0];
+      break;
+    case "low":
+      baseColor = [0, 200, 0];
+      break;
+    default:
+      baseColor = [0, 0, 255];
   }
   const alpha = Math.min(0.2 + rainfall / 20, 0.7);
   return `rgba(${baseColor[0]},${baseColor[1]},${baseColor[2]},${alpha})`;
@@ -42,6 +76,7 @@ export default function MapPage() {
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [fullScreen, setFullScreen] = useState(false);
   const [liveData, setLiveData] = useState(true);
+  const [historicalRainfall, setHistoricalRainfall] = useState<HistoricalRainfall[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -80,10 +115,20 @@ export default function MapPage() {
     }
   };
 
+  const fetchHistoricalRainfall = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/historical-rainfall/`);
+      setHistoricalRainfall(res.data);
+    } catch (err) {
+      console.error("Error fetching historical rainfall:", err);
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
       await fetchVulnerabilityPoints();
       await fetchRainfallData();
+      await fetchHistoricalRainfall();
       setLoading(false);
     };
     load();
@@ -111,7 +156,7 @@ export default function MapPage() {
     <SafeAreaView style={{ flex: 1 }}>
       {/* Navbar */}
       <View style={styles.navbar}>
-        <Text style={styles.navTitle}>Flood Risk Map  </Text>
+        <Text style={styles.navTitle}>Flood Risk Map</Text>
         <View style={styles.liveSwitch}>
           <Text style={{ fontSize: 12, color: "#fff", marginRight: 5 }}>{liveData ? "Live" : "Offline"}</Text>
           <Switch
@@ -161,13 +206,49 @@ export default function MapPage() {
         <TouchableOpacity style={styles.zoomBtn} onPress={zoomOut}><Text style={styles.zoomText}>-</Text></TouchableOpacity>
       </View>
 
-      {/* Full Screen button below navbar */}
+      {/* Full Screen button */}
       <TouchableOpacity
         style={[styles.fullScreenBtn, { top: 60, left: 10 }]}
         onPress={() => setFullScreen((prev) => !prev)}
       >
         <Text style={styles.fullScreenText}>{fullScreen ? "Exit Full Screen" : "Full Screen"}</Text>
       </TouchableOpacity>
+
+      {/* Offline data + Historical rainfall */}
+      {/* Offline data + Historical rainfall */}
+{!liveData && (
+  <View style={styles.offlineDataContainer}>
+    <Text style={styles.offlineTitle}>Offline Historical Rainfall</Text>
+    <ScrollView style={{ maxHeight: height / 2 }}>
+      {historicalRainfall.map((h) => (
+        <View key={h.year} style={styles.offlineCard}>
+          {/* Only show the chart, no point name or risk */}
+          <Text style={{ fontWeight: "bold", fontSize: 14, marginBottom: 5 }}>{h.year}</Text>
+          <LineChart
+            data={{
+              labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+              datasets: [{
+                data: [
+                  h.jan, h.feb, h.mar, h.apr, h.may, h.june,
+                  h.july, h.aug, h.sept, h.oct, h.nov, h.dec
+                ]
+              }]
+            }}
+            width={width - 40}
+            height={180}
+            chartConfig={{
+              backgroundGradientFrom: "#eff3ff",
+              backgroundGradientTo: "#efefef",
+              decimalPlaces: 2,
+              color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+            }}
+            style={{ borderRadius: 8 }}
+          />
+        </View>
+      ))}
+    </ScrollView>
+  </View>
+)}
     </SafeAreaView>
   );
 }
@@ -231,4 +312,33 @@ const styles = StyleSheet.create({
   },
   fullScreenText: { color: "#fff", fontWeight: "bold", fontSize: 12 },
   loadingOverlay: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#fff" },
+  offlineDataContainer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    maxHeight: height / 1.8,
+    backgroundColor: "#f3f3f3",
+    padding: 10,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  offlineTitle: { fontWeight: "bold", fontSize: 16, marginBottom: 10 },
+  offlineCard: {
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  pointName: { fontWeight: "bold", fontSize: 16, marginBottom: 4 },
+  detailText: { fontSize: 14, marginBottom: 2 },
 });

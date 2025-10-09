@@ -20,7 +20,7 @@ import * as Location from "expo-location";
 
 import LocationBar from "../../components/ui/LocationBar";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 interface SliderItem {
   id: number;
@@ -35,7 +35,7 @@ interface FloodPoint {
   risk: string;
   risk_prob: number;
   notes: string[];
-  name?: string; // full human-readable address
+  name?: string;
 }
 
 export default function HomeTab() {
@@ -108,7 +108,7 @@ export default function HomeTab() {
 
   const fetchSliders = async () => {
     try {
-      const res = await axios.get("http://10.55.240.81:8000/api/sliders/");
+      const res = await axios.get("http://10.107.0.142:8000/api/sliders/");
       setSliders(res.data);
     } catch (err) {
       console.log("Slider fetch error:", err);
@@ -117,7 +117,7 @@ export default function HomeTab() {
     }
   };
 
-  // Fetch flood points
+  // Fetch flood data
   useEffect(() => {
     if (!currentLocation) return;
     fetchFloodData();
@@ -127,14 +127,9 @@ export default function HomeTab() {
 
   const fetchFloodData = async () => {
     if (!currentLocation) return;
-
     try {
-      const lat = currentLocation.latitude ?? 28.6139;
-      const lon = currentLocation.longitude ?? 77.209;
-
-      const res = await axios.get(
-        `http://10.55.240.81:8000/api/flood_risk/?lat=${lat}&lon=${lon}`
-      );
+      const { latitude, longitude } = currentLocation;
+      const res = await axios.get(`http://10.107.0.142:8000/api/flood_risk/?lat=${latitude}&lon=${longitude}`);
 
       if (res.data?.data) {
         const pointsWithName = await Promise.all(
@@ -157,7 +152,7 @@ export default function HomeTab() {
           })
         );
         setFloodPoints(pointsWithName);
-      } else console.log("No data received from flood API");
+      }
     } catch (err) {
       console.log("Flood API error:", err);
     } finally {
@@ -167,10 +162,12 @@ export default function HomeTab() {
 
   const getMarkerColor = (point: FloodPoint) => (point.risk === "HIGH" ? "red" : "green");
 
-  const zoomIn = () =>
-    setRegion({ ...region, latitudeDelta: region.latitudeDelta / 2, longitudeDelta: region.longitudeDelta / 2 });
-  const zoomOut = () =>
-    setRegion({ ...region, latitudeDelta: region.latitudeDelta * 2, longitudeDelta: region.longitudeDelta * 2 });
+  const getRainfallStatus = (rain: number) => {
+    if (rain >= 20) return { label: "🌧️ Heavy Rainfall", color: "#b91c1c" };
+    if (rain >= 5) return { label: "🌦️ Moderate Rainfall", color: "#eab308" };
+    if (rain > 0) return { label: "☁️ Light Rainfall", color: "#2563eb" };
+    return { label: "☀️ No Rain", color: "#16a34a" };
+  };
 
   if (!currentLocation) {
     return (
@@ -204,8 +201,6 @@ export default function HomeTab() {
         {/* Map Section */}
         <View style={{ position: "relative", marginBottom: 20 }}>
           <Text style={styles.sectionTitle}>Flood Risk Map 💧</Text>
-
-          {/* Full screen button */}
           <TouchableOpacity
             style={styles.fullScreenButton}
             onPress={() => setMapFullScreen(true)}
@@ -226,7 +221,7 @@ export default function HomeTab() {
               >
                 <Callout>
                   <Text>{point.name || `Lat: ${point.lat}, Lon: ${point.lon}`}</Text>
-                  <Text>Rain: {point.rain_mm} mm</Text>
+                  <Text>Rain: {point.rain_mm?.toFixed(2) ?? "0.00"} mm</Text>
                   <Text>Risk: {point.risk} ({point.risk_prob}%)</Text>
                 </Callout>
               </Marker>
@@ -237,32 +232,39 @@ export default function HomeTab() {
         {/* Flood Info Cards */}
         <View style={{ marginTop: 20 }}>
           <Text style={styles.sectionTitle}>Flood Information</Text>
-          {floodPoints.map((point, idx) => (
-            <View key={idx} style={styles.floodCard}>
-              <Text style={styles.locationText}>📍 {point.name || `Lat: ${point.lat}, Lon: ${point.lon}`}</Text>
-              <Text>Rainfall: {point.rain_mm} mm</Text>
-              <Text>Risk Level: {point.risk} ({point.risk_prob}%)</Text>
-              {(point.notes || []).map((note, i) => (
-                <Text key={i} style={styles.noteText}>• {note}</Text>
-              ))}
-              <View style={{ marginTop: 8 }}>
-                <Button
-                  title="View Full Alert"
-                  onPress={() =>
-                    router.push({
-                      pathname: "/alert",
-                      params: {
-                        location: point.name,
-                        rainfall: point.rain_mm.toString(),
-                        risk: point.risk_prob.toString(),
-                        notes: JSON.stringify(point.notes),
-                      },
-                    })
-                  }
-                />
+          {floodPoints.map((point, idx) => {
+            const rainStatus = getRainfallStatus(point.rain_mm || 0);
+            return (
+              <View key={idx} style={styles.floodCard}>
+                <Text style={styles.locationText}>📍 {point.name || `Lat: ${point.lat}, Lon: ${point.lon}`}</Text>
+                <Text style={[styles.rainText, { color: rainStatus.color }]}>
+                  {rainStatus.label}: {point.rain_mm?.toFixed(2) ?? "0.00"} mm
+                </Text>
+                <Text>
+                  Risk Level: {point.risk} ({point.risk_prob}%)
+                </Text>
+                {(point.notes || []).map((note, i) => (
+                  <Text key={i} style={styles.noteText}>• {note}</Text>
+                ))}
+                <View style={{ marginTop: 8 }}>
+                  <Button
+                    title="View Full Alert"
+                    onPress={() =>
+                      router.push({
+                        pathname: "/alert",
+                        params: {
+                          location: point.name,
+                          rainfall: point.rain_mm.toString(),
+                          risk: point.risk_prob.toString(),
+                          notes: JSON.stringify(point.notes),
+                        },
+                      })
+                    }
+                  />
+                </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
 
         {/* Modal for Safety Notes */}
@@ -289,7 +291,6 @@ export default function HomeTab() {
                 />
               ))}
             </MapView>
-            {/* Overlay legend on top */}
             <View style={styles.mapOverlay}>
               <Text style={{ fontWeight: "bold", fontSize: 16 }}>Legend:</Text>
               <View style={{ flexDirection: "row", marginTop: 5 }}>
@@ -302,6 +303,8 @@ export default function HomeTab() {
             </View>
           </View>
         </RNModal>
+
+        {/* Footer */}
         <View style={{ alignItems: "center", marginTop: 40, marginBottom: 40 }}>
           <Text style={{
             fontSize: 40,
@@ -348,15 +351,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  locationText: {
-    fontWeight: "bold",
-    fontSize: 18,
-    color: "#1E3A8A",
-    textShadowColor: "rgba(30, 58, 138, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-    marginBottom: 6,
-  },
+  locationText: { fontWeight: "bold", fontSize: 18, color: "#1E3A8A", marginBottom: 6 },
+  rainText: { fontWeight: "600", fontSize: 16, marginBottom: 4 },
   noteText: { fontSize: 14, marginBottom: 4, color: "#991b1b" },
   modalContainer: { backgroundColor: "#fff", padding: 20, borderRadius: 12 },
   modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 10, color: "#dc2626" },
@@ -367,7 +363,7 @@ const styles = StyleSheet.create({
     top: 50,
     right: 60,
     backgroundColor: "#2563eb",
-    padding: 2,
+    padding: 6,
     borderRadius: 6,
     zIndex: 100,
   },
@@ -380,25 +376,4 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   colorBox: { width: 20, height: 20, marginRight: 5, borderRadius: 4 },
-  footer: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    height: 70,
-    backgroundColor: "#FF6B00",
-    alignItems: "center",
-    justifyContent: "center",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 10,
-  },
-  footerText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
 });

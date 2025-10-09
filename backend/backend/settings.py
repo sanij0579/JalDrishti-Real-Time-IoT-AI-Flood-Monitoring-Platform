@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'flood',
     'weather',
     'reviews',
+    'rainfall',
+    'flood_monitor',
     
 ]
 

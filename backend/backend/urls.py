@@ -32,6 +32,9 @@ urlpatterns = [
     path('api/', include('flood.urls')),
     path('api/', include('weather.urls')),
     path('api/', include('reviews.urls')),
+    path('api/', include('rainfall.urls')),
+    path('', include('flood_monitor.urls')),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

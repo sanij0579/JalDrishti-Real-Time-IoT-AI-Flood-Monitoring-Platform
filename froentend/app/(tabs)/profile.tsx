@@ -42,9 +42,9 @@ const Profile = () => {
           style={styles.profileImage}
         />
         <View>
-          <Text style={styles.userName}>Dimpal Jain</Text>
+          <Text style={styles.userName}>Sani Jain</Text>
           <Text style={styles.userRole}>Citizen - Smart Flood System</Text>
-          <Text style={styles.userPhone}>📍 Indore, Madhya Pradesh</Text>
+          {/* <Text style={styles.userPhone}>📍 Indore, Madhya Pradesh</Text> */}
         </View>
       </View>
 
@@ -70,7 +70,7 @@ const Profile = () => {
         </View>
         <View style={styles.statBox}>
           <Ionicons name="cloudy-night-outline" size={22} color="#f59e0b" />
-          <Text style={styles.statValue}>Rain: 42mm</Text>
+          <Text style={styles.statValue}>Rain: 0mm</Text>
           <Text style={styles.statLabel}>Current Level</Text>
         </View>
       </View>

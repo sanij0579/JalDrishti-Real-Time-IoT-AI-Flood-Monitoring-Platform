@@ -6,6 +6,10 @@ from django.shortcuts import render
 from sliders.models import Slider
 from locations.models import Booking
 from theme.models import AppTheme
+from flood.models import VulnerabilityPoint
+from reviews.models import Review
+
+
 
 # Custom AdminSite
 class CombinedAdminSite(admin.AdminSite):
@@ -25,6 +29,8 @@ class CombinedAdminSite(admin.AdminSite):
         sliders = Slider.objects.all()
         bookings = Booking.objects.all()
         themes = AppTheme.objects.all()
+        reviews = Review.objects.all()
+        vulnerabilities = VulnerabilityPoint.objects.all()
 
         # Template context
         context = {
@@ -42,3 +48,5 @@ combined_admin = CombinedAdminSite(name='combinedadmin')
 combined_admin.register(Slider)
 combined_admin.register(Booking)
 combined_admin.register(AppTheme)
+combined_admin.register(Review)
+combined_admin.register(VulnerabilityPoint)

@@ -220,7 +220,7 @@ export default function TrafficAndReviews() {
         ))}
 
         <TextInput
-          placeholder="Write your review..."
+          placeholder="Write your Area Name"
           value={inputText}
           onChangeText={setInputText}
           style={styles.input}

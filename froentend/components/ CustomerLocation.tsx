@@ -56,7 +56,7 @@ export default function CustomerLocation({ setAddress: setParentAddress }: Custo
           longitude: loc.coords.longitude,
           address: fullAddress,
         };
-        await axios.post("http://10.25.97.81:8000/api/customer-location/", payload);
+        await axios.post("http://10.107.0.142:8000/api/customer-location/", payload);
       } catch (err: any) {
         console.log(err);
         setAddress("Error fetching location");
@@ -73,7 +73,7 @@ export default function CustomerLocation({ setAddress: setParentAddress }: Custo
   const sendBooking = async () => {
     if (!coords) return Alert.alert("Location not ready");
     try {
-      const res = await axios.post("http://10.25.97.81:8000/api/bookings/", {
+      const res = await axios.post("http://10.107.0.142:8000/api/bookings/", {
         user_id: 1,
         service_id: 5,
         latitude: coords.latitude,

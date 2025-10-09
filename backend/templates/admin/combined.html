@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Combined Results</title>
+    <title>Combined Admin View</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -33,22 +33,11 @@
             letter-spacing: 0.03em;
         }
 
-        tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        tr:hover { background-color: #e0f2fe; transition: 0.3s; }
+        td { font-size: 0.95rem; }
 
-        tr:hover {
-            background-color: #e0f2fe;
-            transition: 0.3s;
-        }
-
-        td {
-            font-size: 0.95rem;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
+        .table-container { overflow-x: auto; }
 
         @media(max-width: 768px) {
             th, td { padding: 10px; font-size: 0.85rem; }
@@ -56,7 +45,7 @@
     </style>
 </head>
 <body>
-    <h1>Combined Results</h1>
+    <h1>Combined Admin View</h1>
 
     <h2>Sliders</h2>
     <div class="table-container">
@@ -123,5 +112,52 @@
             </tbody>
         </table>
     </div>
+
+    <h2>Reviews</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviews %}
+                <tr>
+                    <td>{{ review.id }}</td>
+                    <td>{{ review.user }}</td>
+                    <td>{{ review.rating }}</td>
+                    <td>{{ review.text }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Vulnerabilities</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vuln in vulnerabilities %}
+                <tr>
+                    <td>{{ vuln.id }}</td>
+                    <td>{{ vuln.location }}</td>
+                    <td>{{ vuln.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 </body>
 </html>

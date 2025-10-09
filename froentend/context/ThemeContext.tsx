@@ -25,7 +25,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchTheme = async () => {
       try {
         const res = await axios.get(
-          "http://10.25.97.81:8000/api/theme/active/"
+          "http://10.107.0.142:8000/api/theme/active/"
         );
         const newTheme = res.data.name as ThemeType;
 
