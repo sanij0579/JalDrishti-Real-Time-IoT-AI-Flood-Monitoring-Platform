@@ -114,6 +114,23 @@ Communities living near rivers, canals, and flood-prone areas often suffer due t
 <p align="center">
   <img src="./assets/screenshot1.png" width="650" />
 </p>
+<p align="center">
+  <img src="./assets/screenshot2.png" width="650" />
+</p>
+
+<p align="center">
+  <img src="./assets/screenshot3.png" width="650" />
+</p>
+
+<p align="center">
+  <img src="./assets/screenshot4.png" width="650" />
+</p>
+
+<p align="center">
+  <img src="./assets/screenshot5.png" width="650" />
+</p>
+
+
 
 ---
 
