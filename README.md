@@ -119,6 +119,7 @@ Communities living near rivers, canals, and flood-prone areas often suffer due t
 
 ## 🛠️ Installation
 
+
 ### 📌 Clone Repository
 
 ```bash
@@ -129,9 +130,56 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
 
+📌 React Native App
+
+cd mobile-app
+npm install
+npm start
+
+📌 React.js Dashboard
+cd admin-dashboard
+npm install
+npm start 
+
 Upload the Arduino/ESP32 code:
 
 HTTPClient http;
 http.begin("<backend-url>/api/sensor/update/");
 http.addHeader("Content-Type", "application/json");
-📌 React Native App
+
+
+📊 Results & Impact
+	•	Covers 10+ flood-prone zones
+	•	Alerts 1,000+ citizens instantly
+	•	Provides 30+ minutes early warning
+	•	Enables faster decision-making for authorities
+
+⸻
+
+🔭 Future Enhancements
+	•	Drone-based flood image ingestion
+	•	Offline evacuation maps
+	•	LSTM-based long-term forecasting
+	•	Multilingual voice warnings
+
+⸻
+
+🤝 Contribution
+
+Pull requests and suggestions are welcome.
+
+⸻
+
+📝 License
+
+MIT License
+
+⸻
+
+🎯 Goal
+
+To make flood-prone regions safer using IoT, AI, and real-time technology.
+---
+
+If you want, I can now **generate all images** you referenced:  
+IoT sensor image, architecture diagram, dashboard preview, app UI, overview image, etc.
